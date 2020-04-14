@@ -3,6 +3,8 @@ Extracts both encrypted and clear .pak archives created by PakMaker for Blitz3D.
 
 You'll require 2 XOR keys, one for header mask and one for file contents.
 
+### NOTE: Not all archives are encrypted! If you fail to extract an archive, use the -x param instead of -e!
+
 # Usage
 Execute without any arguments to print usage.
 
