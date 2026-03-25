@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 // depak - a tool to decrypt and unpack .dat archives made by PakMaker for Blitz3D
 // ermaccer
 
@@ -110,11 +111,11 @@ int main(int argc, char* argv[])
 
 			if (!o_param.empty())
 			{
-				if (!std::experimental::filesystem::exists(o_param))
-					std::experimental::filesystem::create_directory(o_param);
+				if (!std::filesystem::exists(o_param))
+					std::filesystem::create_directory(o_param);
 
-				std::experimental::filesystem::current_path(
-					std::experimental::filesystem::system_complete(std::experimental::filesystem::path(o_param)));
+				std::filesystem::current_path(
+					std::filesystem::absolute(std::filesystem::path(o_param)));
 			}
 
 			// extract
@@ -133,6 +134,11 @@ int main(int argc, char* argv[])
 
 				std::string out(pakEntires[i].c_str(), pakEntires[i].length() - 1);
 				std::cout << "Processing: " << out << std::endl;
+
+				std::filesystem::path outPath(out);
+				if (outPath.has_parent_path())
+					std::filesystem::create_directories(outPath.parent_path());
+
 				std::ofstream oFile(out, std::ofstream::binary);
 				oFile.write(dataBuff.get(), size);
 
@@ -170,8 +176,8 @@ int main(int argc, char* argv[])
 			char temp = 0;
 			char tempString[255];
 			int strlen = 0;
-			int fileSize = (int)std::experimental::filesystem::file_size(argv[argc - 1]);
-			int headerSize = (int)std::experimental::filesystem::file_size(argv[argc - 1]) - (int)pFile.tellg() + 4;
+			int fileSize = (int)std::filesystem::file_size(argv[argc - 1]);
+			int headerSize = (int)std::filesystem::file_size(argv[argc - 1]) - (int)pFile.tellg() + 4;
 
 			std::unique_ptr<char[]> headerBuff = std::make_unique<char[]>(headerSize);
 			pFile.read(headerBuff.get(), headerSize);
@@ -197,8 +203,6 @@ int main(int argc, char* argv[])
 				return 1;
 			}
 
-
-			 
 			for (int i = 0; i < files * 3; i++)
 			{
 
@@ -216,16 +220,16 @@ int main(int argc, char* argv[])
 			}
 
 			pTmp.close();
-			std::experimental::filesystem::remove("tmp.bin");
+			std::filesystem::remove("tmp.bin");
 
 
 			if (!o_param.empty())
 			{
-				if (!std::experimental::filesystem::exists(o_param))
-					std::experimental::filesystem::create_directory(o_param);
+				if (!std::filesystem::exists(o_param))
+					std::filesystem::create_directory(o_param);
 
-				std::experimental::filesystem::current_path(
-					std::experimental::filesystem::system_complete(std::experimental::filesystem::path(o_param)));
+				std::filesystem::current_path(
+					std::filesystem::absolute(std::filesystem::path(o_param)));
 			}
 
 			// extract
@@ -242,6 +246,10 @@ int main(int argc, char* argv[])
 				pFile.seekg(offset,pFile.beg);
 
 				std::cout << "Processing: " << pakEntires[i] << std::endl;
+
+				std::filesystem::path outPath(pakEntires[i]);
+				if (outPath.has_parent_path())
+					std::filesystem::create_directories(outPath.parent_path());
 
 				std::ofstream oFile(pakEntires[i], std::ofstream::binary);
 
